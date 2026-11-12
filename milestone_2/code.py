@@ -1,4 +1,6 @@
 import math, random, sys, time, os, heapq
+import tkinter as tk
+from tkinter import filedialog
 
 # CONSTANTS
 DATA_DIR = "datasets"
@@ -10,7 +12,7 @@ LOG_DEPTH = 2
 if hasattr(sys, "set_int_max_str_digits"):
     sys.set_int_max_str_digits(0)
 
-# input file gen
+# input file gen (Q2)
 def generate_datasets(folder=DATA_DIR, seed=SEED):
     rng = random.Random(seed)
     os.makedirs(folder, exist_ok=True)
@@ -58,7 +60,7 @@ def load_file(path):
         return "mul", (int(lines[0]), int(lines[1]))
     return "1d", [_num(ln) for ln in lines]
 
-# algorithms
+# algorithms (Q3)
 def closest_pair_1d(values):
     nums = sorted(values)
     steps = []
@@ -88,3 +90,44 @@ def closest_pair_1d(values):
 
     d, pair  = rec(0, len(nums) - 1) if len(nums) >=2 else (INF, None)
     return d, pair, steps, nums
+
+
+def karatsuba_multiply(x, y):
+    sign = -1 if (x < 0) != (y < 0) else 1
+    nodes, steps, stats = [], [], {"calls": 0}
+ 
+    def rec(a_, b_, depth, parent):
+        stats["calls"] += 1
+        node = None
+        if depth <= LOG_DEPTH:
+            node = {"id": len(nodes), "depth": depth, "x": a_, "y": b_,
+                    "children": [], "split": None, "z": None, "result": None}
+            nodes.append(node)
+            if parent is not None:
+                nodes[parent]["children"].append(node["id"])
+            steps.append({"type": "call", "node": node["id"]})
+        nid = node["id"] if node else None
+ 
+        if a_ < 10 or b_ < 10:                                # base case
+            res = a_ * b_
+        else:
+            n = max(len(str(a_)), len(str(b_)))
+            m = n // 2
+            p = 10 ** m
+            a, b = divmod(a_, p)                              # x = a*10^m + b
+            c, d = divmod(b_, p)                              # y = c*10^m + d
+            if node:
+                node["split"] = (m, a, b, c, d)
+            z2 = rec(a, c, depth + 1, nid)
+            z0 = rec(b, d, depth + 1, nid)
+            z1 = rec(a + b, c + d, depth + 1, nid) - z2 - z0  # (a+b)(c+d) - ac - bd
+            res = z2 * p * p + z1 * p + z0
+            if node:
+                node["z"] = (z2, z1, z0)
+        if node:
+            node["result"] = res
+            steps.append({"type": "return", "node": node["id"]})
+        return res
+ 
+    product = sign * rec(abs(x), abs(y), 0, None)
+    return product, nodes, steps, stats
