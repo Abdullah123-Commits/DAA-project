@@ -146,7 +146,7 @@ THEMES = {
         node_default="#1e3a5f", node_active="#a16207", node_done="#166534",
         node_edge="#94a3b8", line="#475569", point="#64748b", point_in="#60a5fa",
         pair="#f87171", region="#172554", split="#fb923c",
-    )
+    ),
 }
 
 
@@ -191,11 +191,11 @@ class App(tk.Tk):
         self.header.pack(fill="x", side="top")
         self.header.pack_propagate(False)
 
-        self.title_lbl = tk.Label(self.header, text="  Divide & Conquer Visualizer",
+        self.title_lbl = tk.Label(self.header, text="  D&C Visualizer",
                                   font=("Segoe UI", 15, "bold"), anchor="w")
         self.title_lbl.pack(side="left", padx=(12, 0))        # FIX: was packed twice
 
-        self.subtitle = tk.Label(self.header, text="CS302 · closest pair & karatsuba",
+        self.subtitle = tk.Label(self.header, text=" closest pair & karatsuba",
                                  font=("Segoe UI", 10), anchor="w")
         self.subtitle.pack(side="left", padx=(12, 0))
 
@@ -242,21 +242,21 @@ class App(tk.Tk):
         body = tk.Frame(self)
         body.pack(fill="both", expand=True, padx=10, pady=(0, 6))
 
-        paned = ttk.Panedwindow(body, orient="horizontal")
+        paned = ttk.Panedwindow(body, orient="vertical")
         paned.pack(fill="both", expand=True)
 
-        # canvas
+        # canvas (top)
         left = tk.Frame(paned)
-        paned.add(left, weight=3)
+        paned.add(left, weight=4)
         self.canvas_frame = tk.Frame(left, bd=0, highlightthickness=1)
         self.canvas_frame.pack(fill="both", expand=True)
         self.cv = tk.Canvas(self.canvas_frame, highlightthickness=0)
         self.cv.pack(fill="both", expand=True)
         self.cv.bind("<Configure>", lambda e: self.draw())
 
-        # log
+        # log (bottom)
         right = tk.Frame(paned)
-        paned.add(right, weight=2)
+        paned.add(right, weight=1)
 
         log_head = tk.Frame(right)
         log_head.pack(fill="x")
